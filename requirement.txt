@@ -1,0 +1,24 @@
+# --- System Requirement: Python 3.10+ ---
+
+# AI & Data Science 
+tensorflow==2.17.0
+numpy>=1.23.5,<2.0.0
+matplotlib==3.7.1
+seaborn==0.12.2
+scikit-learn==1.4.2
+pandas==2.2.0
+keras==3.4.1
+Pillow>=9.4.0
+
+# Backend 
+fastapi==0.110.0
+uvicorn==0.27.1
+python-multipart==0.0.9
+requests==2.31.0
+
+# Frontend 
+streamlit==1.31.0
+
+# Notebook Environment
+ipykernel==6.26.0
+notebook==7.0.6
