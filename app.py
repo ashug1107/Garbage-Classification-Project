@@ -215,7 +215,7 @@ with st.sidebar:
     st.markdown("## 📊 System Overview")
     st.markdown("---")
     st.metric("Model Engine", "EfficientNet-B0")
-    st.metric("Test Accuracy", "89.44%")
+    st.metric("Test Accuracy", "85.02%")
     st.metric("Response Time", "< 0.5s")
     st.markdown("---")
     st.info("The AI identifies 6 categories of waste to optimize recycling sorting workflows.")
