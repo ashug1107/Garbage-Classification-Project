@@ -27,20 +27,20 @@ The confusion matrix below demonstrates the model's ability to distinguish betwe
 <img width="788" height="701" alt="image" src="https://github.com/user-attachments/assets/07be5648-1447-4d46-af42-2f2c63e24ed0" />
 
 
-### Classification Report
+### 📊 Classification Report
 
-              |precision    |recall  |f1-score   |support
------------------------------------------------------------
-   cardboard  |     0.95    |  0.93  |    0.94   |  80
-       glass  |     0.89    | 0.95   |  0.92     | 100
-       metal  |     0.79    | 0.96   |  0.87     |  82
-       paper  |     0.77    | 0.87   |  0.82     | 118
-     plastic  |     0.94    | 0.76   |  0.84     |  96
-       trash  |     0.84    | 0.69   |  0.75     | 118
-    accuracy  |             |        |  0.85     | 594
-   macro avg  |     0.86    | 0.86   |  0.86     | 594
-weighted avg  |     0.86    | 0.85   |  0.85     | 594
------------------------------------------------------------
+| Class | Precision | Recall | F1-Score | Support |
+| :--- | :---: | :---: | :---: | :---: |
+| **Cardboard** | 0.95 | 0.93 | 0.94 | 80 |
+| **Glass** | 0.89 | 0.95 | 0.92 | 100 |
+| **Metal** | 0.79 | 0.96 | 0.87 | 82 |
+| **Paper** | 0.77 | 0.87 | 0.82 | 118 |
+| **Plastic** | 0.94 | 0.76 | 0.84 | 96 |
+| **Trash** | 0.84 | 0.69 | 0.75 | 118 |
+| | | | | |
+| **Accuracy** | | | **0.85** | **594** |
+| **Macro Avg** | 0.86 | 0.86 | 0.86 | 594 |
+| **Weighted Avg** | 0.86 | 0.85 | 0.85 | 594 |
 
 ## 🛠️ Installation & Usage
 
