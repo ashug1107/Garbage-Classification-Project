@@ -29,26 +29,18 @@ The confusion matrix below demonstrates the model's ability to distinguish betwe
 
 ### Classification Report
 
-Class,Precision,Recall,F1-Score
-Cardboard,0.88,0.85,0.86
-Glass,0.92,0.90,0.91
-Metal,0.89,0.88,0.88
-Paper,0.85,0.89,0.87
-Plastic,0.87,0.84,0.85
-Trash,0.80,0.82,0.81
-
-              precision    recall  f1-score   support
-
-   cardboard       0.95      0.93      0.94        80
-       glass       0.89      0.95      0.92       100
-       metal       0.79      0.96      0.87        82
-       paper       0.77      0.87      0.82       118
-     plastic       0.94      0.76      0.84        96
-       trash       0.84      0.69      0.75       118
-
-    accuracy                           0.85       594
-   macro avg       0.86      0.86      0.86       594
-weighted avg       0.86      0.85      0.85       594
+              |precision    |recall  |f1-score   |support
+-----------------------------------------------------------
+   cardboard  |     0.95    |  0.93  |    0.94   |  80
+       glass  |     0.89    | 0.95   |  0.92     | 100
+       metal  |     0.79    | 0.96   |  0.87     |  82
+       paper  |     0.77    | 0.87   |  0.82     | 118
+     plastic  |     0.94    | 0.76   |  0.84     |  96
+       trash  |     0.84    | 0.69   |  0.75     | 118
+    accuracy  |             |        |  0.85     | 594
+   macro avg  |     0.86    | 0.86   |  0.86     | 594
+weighted avg  |     0.86    | 0.85   |  0.85     | 594
+-----------------------------------------------------------
 
 ## 🛠️ Installation & Usage
 
