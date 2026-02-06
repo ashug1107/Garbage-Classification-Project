@@ -7,7 +7,7 @@ This project implements an automated waste classification system designed to imp
 * **Architecture:** EfficientNet-B0 (Pre-trained on ImageNet)
 * **Categories:** Cardboard, Glass, Metal, Paper, Plastic, Trash.
 * **Input Size:** 224x224 RGB images.
-* **Key Techniques:** Data Augmentation, Batch Normalization, Fine-Tuning (Last 20 layers).
+* **Key Techniques:** Data Augmentation, Batch Normalization, Fine-Tuning (Last 20 layers), Exploratory Data Analysis.
 
 ## 🚀 Model Evolution
 
@@ -61,11 +61,11 @@ pip install tensorflow matplotlib seaborn numpy scikit-learn
 
 ### 3. Run the Notebook
 
-Open `Garbage_Classification.ipynb` in Google Colab or Jupyter Notebook to view the training pipeline and run real-time predictions.
+Open `Garbage_Classification1.ipynb` in Google Colab or Jupyter Notebook to view the training pipeline and run real-time predictions.
 
 ## 📁 Project Structure
 
-* `Garbage_Classification.ipynb`: Full training, fine-tuning, and evaluation pipeline.
+* `Garbage_Classification1.ipynb`: Full training, fine-tuning, and evaluation pipeline.
 * `best_model.keras`: The saved weights of the trained model.
 * `confusion_matrix.png`: Visual evaluation of model errors.
 
