@@ -29,6 +29,14 @@ The confusion matrix below demonstrates the model's ability to distinguish betwe
 
 ### Classification Report
 
+Class,Precision,Recall,F1-Score
+Cardboard,0.88,0.85,0.86
+Glass,0.92,0.90,0.91
+Metal,0.89,0.88,0.88
+Paper,0.85,0.89,0.87
+Plastic,0.87,0.84,0.85
+Trash,0.80,0.82,0.81
+
               precision    recall  f1-score   support
 
    cardboard       0.95      0.93      0.94        80
