@@ -1,24 +1,12 @@
-# --- System Requirement: Python 3.10+ ---
+# Use the CPU-only version to save 1GB+ of disk/RAM space
+tensorflow-cpu==2.15.0
 
-# AI & Data Science 
-tensorflow==2.17.0
-numpy>=1.23.5,<2.0.0
-matplotlib==3.7.1
-seaborn==0.12.2
-scikit-learn==1.4.2
-pandas==2.2.0
-keras==3.4.1
-Pillow>=9.4.0
-
-# Backend 
-fastapi==0.110.0
-uvicorn==0.27.1
-python-multipart==0.0.9
-requests==2.31.0
-
-# Frontend 
+# Essential for Streamlit and UI
 streamlit==1.31.0
 
-# Notebook Environment
-ipykernel==6.26.0
-notebook==7.0.6
+# Core math and image processing
+numpy>=1.23.5,<2.0.0
+Pillow>=9.4.0
+
+# For reporting errors to GitHub
+requests==2.31.0
