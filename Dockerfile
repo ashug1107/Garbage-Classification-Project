@@ -1,26 +1,27 @@
-# Use a lightweight Python 3.11 base
+# Use 3.11-slim as our base
 FROM python:3.11-slim
 
-# Install system dependencies for OpenCV and TensorFlow
-RUN apt-get update && apt-get install -y \
+# Ensure we are the root user to perform updates
+USER root
+
+# Fix for Exit Code 100:
+# 1. Clean up any broken cache first
+# 2. Use --allow-releaseinfo-change to bypass repository mismatches
+RUN apt-get clean && \
+    apt-get update --allow-releaseinfo-change && \
+    apt-get install -y --no-install-recommends \
     build-essential \
     libgl1-mesa-glx \
+    libglvnd0 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy and install requirements
+# The rest of your Dockerfile stays the same...
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of your code
 COPY . .
-
-# Make the start script executable
 RUN chmod +x start.sh
-
-# Render expects Port 10000 by default
 EXPOSE 10000
+CMD ["./start.sh"]
 
-# Start both services via our script
-CMD ["./run.sh"]
