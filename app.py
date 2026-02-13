@@ -10,6 +10,9 @@ st.set_page_config(
     layout="wide"
 )
 
+API_PREDICT_URL = "http://0.0.0.0:8000/predict"
+API_REPORT_URL = "http://0.0.0.0:8000/report-error"
+
 # --- 2. BEAUTIFUL UI STYLING (CSS) ---
 st.markdown("""
     <style>
@@ -151,7 +154,7 @@ with col_right:
                     try:
                         # Call Backend
                         files = {"file": final_img.getvalue()}
-                        res = requests.post("http://localhost:8000/predict", files=files)
+                        res = requests.post(API_PREDICT_URL, files=files)
                         
                         if res.status_code == 200:
                             data = res.json()
@@ -199,7 +202,7 @@ if 'last_pred' in st.session_state:
         with f_c2:
             if st.button("📩 Report Mismatch"):
                 try:
-                    rep = requests.post("http://localhost:8000/report-error", 
+                    rep = requests.post(API_REPORT_URL, 
                                        params={"predicted": st.session_state['last_pred'], "actual": correct_cat})
                     if rep.status_code == 200:
                         st.balloons()
