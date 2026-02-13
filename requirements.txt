@@ -1,5 +1,6 @@
 # Use the CPU-only version to save 1GB+ of disk/RAM space
 tensorflow-cpu==2.15.0
+tensorflow==2.16.1
 
 # Essential for Streamlit and UI
 streamlit==1.31.0
@@ -10,3 +11,4 @@ Pillow>=9.4.0
 
 # For reporting errors to GitHub
 requests==2.31.0
+
