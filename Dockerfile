@@ -10,6 +10,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY requirements.txt .
 
+# 2. Install the heaviest package ALONE first
+RUN python -m pip install --no-cache-dir tensorflow-cpu==2.16.1
+
 # THE FIX: Force install to the global system path
 RUN python -m pip install --upgrade pip
 RUN python -m pip install --no-cache-dir fastapi uvicorn streamlit python-multipart
@@ -19,6 +22,7 @@ COPY . .
 RUN chmod +x run.sh
 EXPOSE 10000
 CMD ["./run.sh"]
+
 
 
 
