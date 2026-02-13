@@ -30,7 +30,8 @@ REPO_NAME = "Garbage-Classification-Project"
 
 # --- 2. MODEL LOADING ---
 try:
-    model = tf.keras.models.load_model(MODEL_PATH, compile=False)
+    from tensorflow.keras.models import load_model
+    model = tf.keras.models.load_model(MODEL_PATH, compile=False, safe_mode=False)
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     print("✅ System: AI Model loaded successfully.")
 except Exception as e:
