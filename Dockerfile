@@ -1,19 +1,18 @@
-# Use 3.11-slim as our base
-FROM python:3.11-slim
+# Use 'bullseye-slim' instead of just 'slim' for stability
+FROM python:3.11-bullseye
 
-# Ensure we are the root user to perform updates
+# Ensure we have root permissions
 USER root
 
-# Fix for Exit Code 100:
-# 1. Clean up any broken cache first
-# 2. Use --allow-releaseinfo-change to bypass repository mismatches
+# Clean and update using a more stable repository approach
 RUN apt-get clean && \
-    apt-get update --allow-releaseinfo-change && \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     libgl1-mesa-glx \
     libglvnd0 \
     && rm -rf /var/lib/apt/lists/*
+
 
 WORKDIR /app
 
@@ -24,4 +23,5 @@ COPY . .
 RUN chmod +x start.sh
 EXPOSE 10000
 CMD ["./start.sh"]
+
 
