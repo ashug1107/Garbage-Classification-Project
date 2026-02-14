@@ -1,16 +1,12 @@
-# Use the CPU-only version to save 1GB+ of disk/RAM space
-tensorflow-cpu==2.15.0
+tensorflow-cpu==2.16.1
 tf_keras
-
-# Essential for Streamlit and UI
-streamlit==1.31.0
-
-# Core math and image processing
+fastapi
+uvicorn
+streamlit
 numpy>=1.23.5,<2.0.0
-Pillow>=9.4.0
-
-# For reporting errors to GitHub
-requests==2.31.0
+python-multipart
+Pillow
+requests
 
 
 
