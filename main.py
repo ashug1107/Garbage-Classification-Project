@@ -13,9 +13,39 @@ import tf_keras as keras
 
 app = FastAPI(title="EcoScan AI - Integrated Backend")
 
+import json
+import zipfile
+
+
+def load_model_with_surgery(model_path):
+    # 1. Extract the config from the .keras zip file
+    with zipfile.ZipFile(model_path, 'r') as zip_ref:
+        config_data = zip_ref.read('config.json').decode('utf-8')
+    
+    # 2. PERFORM SURGERY: Replace Keras 3 keyword with Keras 2 keyword
+    # This fixes the 'InputLayer' deserialization error
+    config_data = config_data.replace('"batch_shape"', '"batch_input_shape"')
+    
+    # 3. Reconstruct the model structure
+    config_dict = json.loads(config_data)
+    model = keras.models.model_from_json(json.dumps(config_dict))
+    
+    # 4. Load the weights from the original file
+    # Even if the config fails, the weights in .keras files are standard
+    model.load_weights(model_path)
+    return model
+
+# --- EXECUTE LOADING ---
+try:
+    MODEL_PATH = "garbage_classifier_efficientnetb0_model.keras"
+    model = load_model_with_surgery(MODEL_PATH)
+    print("✅ System: Model Surgery Successful. Weights loaded.")
+except Exception as e:
+    print(f"❌ Surgery Failed: {e}")
+
 # --- 1. CONFIGURATION ---
 
-MODEL_PATH = "garbage_classifier_efficientnetb0_model.keras"
+#MODEL_PATH = "garbage_classifier_efficientnetb0_model.keras"
 CLASS_NAMES = ['cardboard', 'glass', 'metal', 'paper', 'plastic', 'trash']
 
 # Directory to store user-uploaded images
