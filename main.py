@@ -7,7 +7,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 
 import os
 # This ensures we don't accidentally force the old legacy mode
-os.environ["TF_USE_LEGACY_KERAS"] = "0" 
+os.environ["TF_USE_LEGACY_KERAS"] = "1" 
 
 import tensorflow as tf
 from tensorflow import keras
