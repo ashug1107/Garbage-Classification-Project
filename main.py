@@ -5,12 +5,11 @@ import numpy as np
 from PIL import Image
 from fastapi import FastAPI, UploadFile, File, HTTPException
 
-import os
 # This ensures we don't accidentally force the old legacy mode
 os.environ["TF_USE_LEGACY_KERAS"] = "1" 
 
 import tensorflow as tf
-from tensorflow import keras
+import tf_keras as keras
 
 app = FastAPI(title="EcoScan AI - Integrated Backend")
 
@@ -30,8 +29,8 @@ REPO_NAME = "Garbage-Classification-Project"
 
 # --- 2. MODEL LOADING ---
 try:
-    from tensorflow.keras.models import load_model
-    model = tf.keras.models.load_model(MODEL_PATH, compile=False, safe_mode=False)
+    from tf_keras.models import load_model
+    model = keras.models.load_model(MODEL_PATH, compile=False, safe_mode=False)
     #model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     print("✅ System: AI Model loaded successfully.")
 except Exception as e:
