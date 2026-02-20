@@ -17,28 +17,32 @@ import json
 import zipfile
 
 
-def load_model_with_surgery(model_path):
-    # 1. Extract the config from the .keras zip file
+def deep_surgery_load(model_path):
+    # 1. Open the .keras file (it's actually a ZIP)
     with zipfile.ZipFile(model_path, 'r') as zip_ref:
-        config_data = zip_ref.read('config.json').decode('utf-8')
+        config_str = zip_ref.read('config.json').decode('utf-8')
     
-    # 2. PERFORM SURGERY: Replace Keras 3 keyword with Keras 2 keyword
-    # This fixes the 'InputLayer' deserialization error
-    config_data = config_data.replace('"batch_shape"', '"batch_input_shape"')
+    # 2. PERFORM TEXT SURGERY ON THE CONFIG
+    # Fix the InputLayer naming conflict
+    config_str = config_str.replace('"batch_shape"', '"batch_input_shape"')
     
-    # 3. Reconstruct the model structure
-    config_dict = json.loads(config_data)
+    # Fix the DTypePolicy conflict (convert object back to simple string)
+    # We target the Rescaling layer's complex dtype config
+    target_dtype_block = '"dtype": {"module": "keras", "class_name": "DTypePolicy", "config": {"name": "float32"}, "registered_name": null}'
+    config_str = config_str.replace(target_dtype_block, '"dtype": "float32"')
+
+    # 3. Rebuild the model structure
+    config_dict = json.loads(config_str)
     model = keras.models.model_from_json(json.dumps(config_dict))
     
-    # 4. Load the weights from the original file
-    # Even if the config fails, the weights in .keras files are standard
+    # 4. Pour the weights in
     model.load_weights(model_path)
     return model
 
 # --- EXECUTE LOADING ---
 try:
     MODEL_PATH = "garbage_classifier_efficientnetb0_model.keras"
-    model = load_model_with_surgery(MODEL_PATH)
+    model = deep_surgery_load(MODEL_PATH)
     print("✅ System: Model Surgery Successful. Weights loaded.")
 except Exception as e:
     print(f"❌ Surgery Failed: {e}")
