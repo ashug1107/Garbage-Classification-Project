@@ -10,8 +10,8 @@ st.set_page_config(
     layout="wide"
 )
 
-API_PREDICT_URL = "http://0.0.0.0:8000/predict"
-API_REPORT_URL = "http://0.0.0.0:8000/report-error"
+API_PREDICT_URL = "http://127.0.0.1:8000/predict"
+API_REPORT_URL = "http://127.0.0.1:8000/report-error"
 
 # --- 2. BEAUTIFUL UI STYLING (CSS) ---
 st.markdown("""
