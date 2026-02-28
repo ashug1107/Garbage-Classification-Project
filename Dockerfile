@@ -1,26 +1,21 @@
-# 1. Use a slim image to save memory (Crucial for Render Free Tier)
+# 1. Use the standard slim image
 FROM python:3.10-slim
 
-# 2. Set the working directory
+# 2. Set working directory
 WORKDIR /app
 
-# 3. Install system dependencies for OpenCV/Pillow if needed
-RUN apt-get clean && apt-get update --fix-missing && apt-get install -y \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
-    && rm -rf /var/lib/apt/lists/*
+# 3. Skip the 'apt-get' system updates entirely to avoid Exit Code 100
+# We only need these if we use OpenCV. Pillow doesn't need them!
 
-# 4. Copy and install requirements first (to use Docker cache)
+# 4. Copy and install requirements
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 5. Copy the rest of your app (app.py and your .keras model)
+# 5. Copy your project files
 COPY . .
 
-# 6. Create the upload directory your code expects
+# 6. Create the upload folder
 RUN mkdir -p user_uploads
 
-# 7. Use the $PORT variable provided by Render
-# We don't use EXPOSE because Render assigns a random port
+# 7. Start the app
 CMD ["sh", "-c", "streamlit run app.py --server.port $PORT --server.address 0.0.0.0"]
-
