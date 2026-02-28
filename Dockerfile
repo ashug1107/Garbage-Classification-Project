@@ -5,7 +5,7 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # 3. Install system dependencies for OpenCV/Pillow if needed
-RUN apt-get update && apt-get install -y \
+RUN apt-get clean && apt-get update --fix-missing && apt-get install -y \
     libgl1-mesa-glx \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
@@ -23,3 +23,4 @@ RUN mkdir -p user_uploads
 # 7. Use the $PORT variable provided by Render
 # We don't use EXPOSE because Render assigns a random port
 CMD ["sh", "-c", "streamlit run app.py --server.port $PORT --server.address 0.0.0.0"]
+
