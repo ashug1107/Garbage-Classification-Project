@@ -32,27 +32,30 @@ def load_model_integrated():
         # 2. THE DEEP SEARCH FUNCTION
         # This looks through every single folder and list in the config file
         def deep_clean(obj):
-            # ONLY look inside dictionaries
             if isinstance(obj, dict):
+                # 1. Fix the batch_shape error
                 if "batch_shape" in obj:
                     obj["batch_input_shape"] = obj.pop("batch_shape")
         
+                # 2. THE NUCLEAR FIX FOR 'str has no attribute name'
+                # We set it to a simple string and delete ALL the modern metadata
                 if "dtype" in obj:
-                    # The "as_list" fix from the previous step
-                    obj["dtype"] = {"class_name": "float32", "config": {"name": "float32"}}
+                    obj["dtype"] = "float32"
         
-                if "registered_name" in obj:
-                    del obj["registered_name"]
+                # These are the "Modern Keras" keys that trigger the '.name' lookup
+                # Deleting them forces Keras 2 into 'Legacy Mode'
+                for key in ["module", "registered_name", "class_name"]:
+                    if key in obj and key != "InputLayer": # Don't delete class_name for layers
+                        del obj[key]
 
-                # Keep looking deeper, but only if the value is a dict or list
+                # Keep looking deeper
                 for key, value in list(obj.items()):
-                    if isinstance(value, (dict, list)): # This line prevents the 'bool' error
+                    if isinstance(value, (dict, list)):
                         deep_clean(value)
 
-            # ONLY look inside lists
             elif isinstance(obj, list):
                 for item in obj:
-                    if isinstance(item, (dict, list)): # This line prevents the 'bool' error
+                    if isinstance(item, (dict, list)):
                         deep_clean(item)
 
         # Run the deep clean on the whole file
