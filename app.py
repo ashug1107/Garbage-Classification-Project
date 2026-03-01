@@ -23,29 +23,29 @@ REPO_NAME = "Garbage-Classification-Project"
 @st.cache_resource
 def load_model_integrated():
     try:
-        # 1. Open the .keras file
+        # 1. Extract the config
         with zipfile.ZipFile(MODEL_PATH, 'r') as zip_ref:
             config_str = zip_ref.read('config.json').decode('utf-8')
         
-        # --- THE PRECISION SURGERY ---
-        
-        # Fix 1: InputLayer naming
-        config_str = config_str.replace('"batch_shape"', '"batch_input_shape"')
-        
-        # Fix 2: The "float32" Object Fix (The 'str' has no attribute 'name' fix)
-        # We replace the broken DTypePolicy block with a simple dictionary that has a 'name' key
-        target_dtype_block = '"dtype": {"module": "keras", "class_name": "DTypePolicy", "config": {"name": "float32"}, "registered_name": null}'
-        # Instead of replacing with "float32", we replace it with a simple config dictionary
-        config_str = config_str.replace(target_dtype_block, '"dtype": {"class_name": "DTypePolicy", "config": {"name": "float32"}}')
-        
-        # Fix 3: Global cleanup for any other 'str' vs 'object' dtype conflicts
-        config_str = config_str.replace('"registered_name": null', '"registered_name": "float32"')
-
-        # 2. Rebuild the model structure
         config_dict = json.loads(config_str)
+
+        # 2. NUCLEAR SURGERY: Remove 'dtype' from every layer to stop the '.name' error
+        # This forces Keras to use default float32 settings
+        if "layers" in config_dict["config"]:
+            for layer in config_dict["config"]["layers"]:
+                # Fix the InputLayer naming
+                if layer["class_name"] == "InputLayer":
+                    if "batch_shape" in layer["config"]:
+                        layer["config"]["batch_input_shape"] = layer["config"].pop("batch_shape")
+                
+                # Delete the dtype policy that causes the 'str has no attribute name' crash
+                if "dtype" in layer["config"]:
+                    del layer["config"]["dtype"]
+
+        # 3. Rebuild the model structure
         model = keras.models.model_from_json(json.dumps(config_dict))
         
-        # 3. Load the weights
+        # 4. Load the weights
         model.load_weights(MODEL_PATH)
         return model
     except Exception as e:
