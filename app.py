@@ -20,7 +20,7 @@ REPO_OWNER = "ashug1107"
 REPO_NAME = "Garbage-Classification-Project"
 
 # --- 3. MODEL SURGERY & LOADING (From main.py) ---
-# --- 3. MODEL SURGERY & LOADING (Updated for 'as_list' Fix) ---
+# --- 3. MODEL SURGERY & LOADING (Fixed: 'Instance of Layer' Error) ---
 @st.cache_resource
 def load_model_integrated():
     try:
@@ -28,7 +28,7 @@ def load_model_integrated():
         with zipfile.ZipFile(MODEL_PATH, 'r') as zip_ref:
             config_str = zip_ref.read('config.json').decode('utf-8')
         
-        # --- THE SURGERY (Text Replacements) ---
+        # --- THE SURGERY ---
         # Fix 1: InputLayer naming conflict
         config_str = config_str.replace('"batch_shape"', '"batch_input_shape"')
         
@@ -36,8 +36,9 @@ def load_model_integrated():
         target_dtype_block = '"dtype": {"module": "keras", "class_name": "DTypePolicy", "config": {"name": "float32"}, "registered_name": null}'
         config_str = config_str.replace(target_dtype_block, '"dtype": "float32"')
         
-        # Fix 3: The 'as_list' error fix (Crucial for EfficientNet)
-        config_str = config_str.replace('"class_name": "InputLayer"', '"class_name": "Input"')
+        # Fix 3: Handle the InputLayer correctly (Crucial Fix)
+        # We ensure it looks for the Layer Class, not the function
+        config_str = config_str.replace('"class_name": "Input"', '"class_name": "InputLayer"')
 
         # 2. Rebuild the model structure
         config_dict = json.loads(config_str)
@@ -45,10 +46,9 @@ def load_model_integrated():
         
         # 3. Load the weights
         model.load_weights(MODEL_PATH)
-        print("✅ System: Model Surgery Successful. Weights loaded.")
         return model
     except Exception as e:
-        # This error shows up on your website UI if it fails
+        # This will now give us a specific error if it fails
         st.error(f"❌ Surgery Failed: {e}")
         return None
 
