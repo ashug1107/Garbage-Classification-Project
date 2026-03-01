@@ -29,25 +29,28 @@ def load_model_integrated():
         
         config_dict = json.loads(config_str)
 
-        # 2. TOTAL ACCESS SURGERY
-        # We need to fix the 'batch_shape' at the TOP level and the LAYER level
-        def fix_layer_config(conf):
-            if "batch_shape" in conf:
-                conf["batch_input_shape"] = conf.pop("batch_shape")
-            if "dtype" in conf:
-                # Delete the complex dtype to avoid the .name error
-                del conf["dtype"]
-            return conf
+        # 2. THE DEEP SEARCH FUNCTION
+        # This looks through every single folder and list in the config file
+        def deep_clean(obj):
+            if isinstance(obj, dict):
+                # Fix batch_shape -> batch_input_shape
+                if "batch_shape" in obj:
+                    obj["batch_input_shape"] = obj.pop("batch_shape")
+                
+                # Delete the broken dtype policies
+                if "dtype" in obj:
+                    del obj["dtype"]
+                
+                # Keep looking deeper into other dictionaries
+                for key in list(obj.keys()):
+                    deep_clean(obj[key])
+            elif isinstance(obj, list):
+                # Keep looking into lists of layers
+                for item in obj:
+                    deep_clean(item)
 
-        # Fix the top-level input layer if it exists
-        if "config" in config_dict:
-            config_dict["config"] = fix_layer_config(config_dict["config"])
-            
-            # Fix all nested layers
-            if "layers" in config_dict["config"]:
-                for layer in config_dict["config"]["layers"]:
-                    if "config" in layer:
-                        layer["config"] = fix_layer_config(layer["config"])
+        # Run the deep clean on the whole file
+        deep_clean(config_dict)
 
         # 3. Rebuild the model structure
         model = keras.models.model_from_json(json.dumps(config_dict))
