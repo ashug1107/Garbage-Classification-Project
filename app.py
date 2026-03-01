@@ -20,22 +20,35 @@ REPO_OWNER = "ashug1107"
 REPO_NAME = "Garbage-Classification-Project"
 
 # --- 3. MODEL SURGERY & LOADING (From main.py) ---
+# --- 3. MODEL SURGERY & LOADING (Updated for 'as_list' Fix) ---
 @st.cache_resource
 def load_model_integrated():
     try:
-        # Surgery logic
+        # 1. Open the .keras file
         with zipfile.ZipFile(MODEL_PATH, 'r') as zip_ref:
             config_str = zip_ref.read('config.json').decode('utf-8')
         
+        # --- THE SURGERY (Text Replacements) ---
+        # Fix 1: InputLayer naming conflict
         config_str = config_str.replace('"batch_shape"', '"batch_input_shape"')
+        
+        # Fix 2: DTypePolicy object to simple string
         target_dtype_block = '"dtype": {"module": "keras", "class_name": "DTypePolicy", "config": {"name": "float32"}, "registered_name": null}'
         config_str = config_str.replace(target_dtype_block, '"dtype": "float32"')
+        
+        # Fix 3: The 'as_list' error fix (Crucial for EfficientNet)
+        config_str = config_str.replace('"class_name": "InputLayer"', '"class_name": "Input"')
 
+        # 2. Rebuild the model structure
         config_dict = json.loads(config_str)
         model = keras.models.model_from_json(json.dumps(config_dict))
+        
+        # 3. Load the weights
         model.load_weights(MODEL_PATH)
+        print("✅ System: Model Surgery Successful. Weights loaded.")
         return model
     except Exception as e:
+        # This error shows up on your website UI if it fails
         st.error(f"❌ Surgery Failed: {e}")
         return None
 
