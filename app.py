@@ -23,29 +23,29 @@ REPO_NAME = "Garbage-Classification-Project"
 @st.cache_resource
 def load_model_integrated():
     try:
-        # 1. Extract the config
+        # 1. Extract the config from the .keras (ZIP) file
         with zipfile.ZipFile(MODEL_PATH, 'r') as zip_ref:
             config_str = zip_ref.read('config.json').decode('utf-8')
         
         config_dict = json.loads(config_str)
 
-        # 2. NUCLEAR SURGERY: Remove 'dtype' from every layer to stop the '.name' error
-        # This forces Keras to use default float32 settings
+        # 2. UPDATED NUCLEAR SURGERY
         if "layers" in config_dict["config"]:
             for layer in config_dict["config"]["layers"]:
-                # Fix the InputLayer naming
-                if layer["class_name"] == "InputLayer":
-                    if "batch_shape" in layer["config"]:
-                        layer["config"]["batch_input_shape"] = layer["config"].pop("batch_shape")
+                # --- FIX FOR 'batch_shape' ERROR ---
+                if "batch_shape" in layer["config"]:
+                    # Rename 'batch_shape' to 'batch_input_shape' for Keras 2 compatibility
+                    layer["config"]["batch_input_shape"] = layer["config"].pop("batch_shape")
                 
-                # Delete the dtype policy that causes the 'str has no attribute name' crash
+                # --- FIX FOR 'str object has no attribute name' ERROR ---
+                # Delete the complex dtype policy to use defaults
                 if "dtype" in layer["config"]:
                     del layer["config"]["dtype"]
 
-        # 3. Rebuild the model structure
+        # 3. Rebuild the model structure from the cleaned config
         model = keras.models.model_from_json(json.dumps(config_dict))
         
-        # 4. Load the weights
+        # 4. Load the weights into the structure
         model.load_weights(MODEL_PATH)
         return model
     except Exception as e:
