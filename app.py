@@ -32,31 +32,28 @@ def load_model_integrated():
         # 2. THE DEEP SEARCH FUNCTION
         # This looks through every single folder and list in the config file
         def deep_clean(obj):
+            # ONLY look inside dictionaries
             if isinstance(obj, dict):
-                # Fix batch_shape -> batch_input_shape
                 if "batch_shape" in obj:
                     obj["batch_input_shape"] = obj.pop("batch_shape")
-                
-                # Delete the broken dtype policies
+        
                 if "dtype" in obj:
-                    del obj["dtype"]
-                
-                # Keep looking deeper into other dictionaries
-                for key in list(obj.keys()):
-                    deep_clean(obj[key])
-            elif isinstance(obj, list):
-                # Keep looking into lists of layers
-                for item in obj:
-                    deep_clean(item)
-            # --- THE ERROR-PRONE PART ---
-            if "dtype" in obj:
-                # Instead of: obj["dtype"] = "float32" (This causes 'str' has no attribute 'as_list')
-                # Use a dictionary that satisfies the Keras 2 'as_list' requirement:
-                obj["dtype"] = {"class_name": "float32", "config": {"name": "float32"}} 
+                    # The "as_list" fix from the previous step
+                    obj["dtype"] = {"class_name": "float32", "config": {"name": "float32"}}
+        
+                if "registered_name" in obj:
+                    del obj["registered_name"]
 
-            # --- ALSO ADD THIS TO PREVENT METADATA CRASHES ---
-            if "registered_name" in obj:
-                del obj["registered_name"]
+                # Keep looking deeper, but only if the value is a dict or list
+                for key, value in list(obj.items()):
+                    if isinstance(value, (dict, list)): # This line prevents the 'bool' error
+                        deep_clean(value)
+
+            # ONLY look inside lists
+            elif isinstance(obj, list):
+                for item in obj:
+                    if isinstance(item, (dict, list)): # This line prevents the 'bool' error
+                        deep_clean(item)
 
         # Run the deep clean on the whole file
         deep_clean(config_dict)
