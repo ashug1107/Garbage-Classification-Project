@@ -23,53 +23,34 @@ REPO_NAME = "Garbage-Classification-Project"
 @st.cache_resource
 def load_model_integrated():
     try:
-        # 1. Extract the config
-        with zipfile.ZipFile(MODEL_PATH, 'r') as zip_ref:
-            config_str = zip_ref.read('config.json').decode('utf-8')
+        # 1. Create a fresh, empty version of your architecture
+        # This bypasses the need to read the broken config.json entirely
+        base_model = tf.keras.applications.EfficientNetB0(
+            include_top=False, 
+            weights=None, 
+            input_shape=(224, 224, 3),
+            pooling='avg'
+        )
         
-        config_dict = json.loads(config_str)
-
-        # 2. THE DEEP SEARCH FUNCTION
-        # This looks through every single folder and list in the config file
-        def deep_clean(obj):
-            if isinstance(obj, dict):
-                # 1. Fix the batch_shape error
-                if "batch_shape" in obj:
-                    obj["batch_input_shape"] = obj.pop("batch_shape")
+        # Rebuild your specific top layers (based on your error log)
+        model = tf.keras.Sequential([
+            base_model,
+            tf.keras.layers.Dense(4, activation='softmax') # Assuming 4 classes based on your previous logs
+        ])
         
-                # 2. THE NUCLEAR FIX FOR 'str has no attribute name'
-                # We set it to a simple string and delete ALL the modern metadata
-                if "dtype" in obj:
-                    obj["dtype"] = "float32"
-        
-                # These are the "Modern Keras" keys that trigger the '.name' lookup
-                # Deleting them forces Keras 2 into 'Legacy Mode'
-                for key in ["module", "registered_name", "class_name"]:
-                    if key in obj and key != "InputLayer": # Don't delete class_name for layers
-                        del obj[key]
-
-                # Keep looking deeper
-                for key, value in list(obj.items()):
-                    if isinstance(value, (dict, list)):
-                        deep_clean(value)
-
-            elif isinstance(obj, list):
-                for item in obj:
-                    if isinstance(item, (dict, list)):
-                        deep_clean(item)
-
-        # Run the deep clean on the whole file
-        deep_clean(config_dict)
-
-        # 3. Rebuild the model structure
-        model = keras.models.model_from_json(json.dumps(config_dict))
-        
-        # 4. Load the weights
+        # 2. Load only the weights from your .keras file
+        # .keras files are just ZIPs; Keras can often extract weights even if config is 'unknown'
         model.load_weights(MODEL_PATH)
+        
+        print("✅ System: Safe Shell Loaded Successfully.")
         return model
     except Exception as e:
-        st.error(f"❌ Surgery Failed: {e}")
-        return None
+        st.error(f"❌ Safe Shell Failed: {e}")
+        # Final fallback: If even that fails, we try a direct load with compile=False
+        try:
+            return tf.keras.models.load_model(MODEL_PATH, compile=False)
+        except:
+            return None
 
 model = load_model_integrated()
 
