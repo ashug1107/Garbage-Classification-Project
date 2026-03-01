@@ -20,32 +20,37 @@ REPO_OWNER = "ashug1107"
 REPO_NAME = "Garbage-Classification-Project"
 
 # --- 3. MODEL SURGERY & LOADING (From main.py) ---
-# --- 3. MODEL SURGERY & LOADING (The "Direct Bypass" Fix) ---
 @st.cache_resource
 def load_model_integrated():
     try:
-        # First, try the most direct way with safe_mode disabled
-        # This often ignores the 'as_list' metadata conflict automatically
-        model = keras.models.load_model(MODEL_PATH, compile=False, safe_mode=False)
+        # 1. Open the .keras file
+        with zipfile.ZipFile(MODEL_PATH, 'r') as zip_ref:
+            config_str = zip_ref.read('config.json').decode('utf-8')
+        
+        # --- THE PRECISION SURGERY ---
+        
+        # Fix 1: InputLayer naming
+        config_str = config_str.replace('"batch_shape"', '"batch_input_shape"')
+        
+        # Fix 2: The "float32" Object Fix (The 'str' has no attribute 'name' fix)
+        # We replace the broken DTypePolicy block with a simple dictionary that has a 'name' key
+        target_dtype_block = '"dtype": {"module": "keras", "class_name": "DTypePolicy", "config": {"name": "float32"}, "registered_name": null}'
+        # Instead of replacing with "float32", we replace it with a simple config dictionary
+        config_str = config_str.replace(target_dtype_block, '"dtype": {"class_name": "DTypePolicy", "config": {"name": "float32"}}')
+        
+        # Fix 3: Global cleanup for any other 'str' vs 'object' dtype conflicts
+        config_str = config_str.replace('"registered_name": null', '"registered_name": "float32"')
+
+        # 2. Rebuild the model structure
+        config_dict = json.loads(config_str)
+        model = keras.models.model_from_json(json.dumps(config_dict))
+        
+        # 3. Load the weights
+        model.load_weights(MODEL_PATH)
         return model
-    except Exception as primary_error:
-        # If direct load fails, we fall back to a "Clean Surgery"
-        try:
-            with zipfile.ZipFile(MODEL_PATH, 'r') as zip_ref:
-                config_str = zip_ref.read('config.json').decode('utf-8')
-            
-            # Remove the modern 'DTypePolicy' which causes the 'str' errors
-            config_str = config_str.replace('"batch_shape"', '"batch_input_shape"')
-            # This specific replacement targets the 'as_list' crash site
-            config_str = config_str.replace('"DTypePolicy"', '"float32"')
-            
-            config_dict = json.loads(config_str)
-            model = keras.models.model_from_json(json.dumps(config_dict))
-            model.load_weights(MODEL_PATH)
-            return model
-        except Exception as surgery_error:
-            st.error(f"❌ Surgery Failed: {surgery_error}")
-            return None
+    except Exception as e:
+        st.error(f"❌ Surgery Failed: {e}")
+        return None
 
 model = load_model_integrated()
 
