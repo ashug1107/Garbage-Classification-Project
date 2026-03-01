@@ -23,29 +23,36 @@ REPO_NAME = "Garbage-Classification-Project"
 @st.cache_resource
 def load_model_integrated():
     try:
-        # 1. Extract the config from the .keras (ZIP) file
+        # 1. Extract the config
         with zipfile.ZipFile(MODEL_PATH, 'r') as zip_ref:
             config_str = zip_ref.read('config.json').decode('utf-8')
         
         config_dict = json.loads(config_str)
 
-        # 2. UPDATED NUCLEAR SURGERY
-        if "layers" in config_dict["config"]:
-            for layer in config_dict["config"]["layers"]:
-                # --- FIX FOR 'batch_shape' ERROR ---
-                if "batch_shape" in layer["config"]:
-                    # Rename 'batch_shape' to 'batch_input_shape' for Keras 2 compatibility
-                    layer["config"]["batch_input_shape"] = layer["config"].pop("batch_shape")
-                
-                # --- FIX FOR 'str object has no attribute name' ERROR ---
-                # Delete the complex dtype policy to use defaults
-                if "dtype" in layer["config"]:
-                    del layer["config"]["dtype"]
+        # 2. TOTAL ACCESS SURGERY
+        # We need to fix the 'batch_shape' at the TOP level and the LAYER level
+        def fix_layer_config(conf):
+            if "batch_shape" in conf:
+                conf["batch_input_shape"] = conf.pop("batch_shape")
+            if "dtype" in conf:
+                # Delete the complex dtype to avoid the .name error
+                del conf["dtype"]
+            return conf
 
-        # 3. Rebuild the model structure from the cleaned config
+        # Fix the top-level input layer if it exists
+        if "config" in config_dict:
+            config_dict["config"] = fix_layer_config(config_dict["config"])
+            
+            # Fix all nested layers
+            if "layers" in config_dict["config"]:
+                for layer in config_dict["config"]["layers"]:
+                    if "config" in layer:
+                        layer["config"] = fix_layer_config(layer["config"])
+
+        # 3. Rebuild the model structure
         model = keras.models.model_from_json(json.dumps(config_dict))
         
-        # 4. Load the weights into the structure
+        # 4. Load the weights
         model.load_weights(MODEL_PATH)
         return model
     except Exception as e:
