@@ -48,6 +48,15 @@ def load_model_integrated():
                 # Keep looking into lists of layers
                 for item in obj:
                     deep_clean(item)
+            # --- THE ERROR-PRONE PART ---
+            if "dtype" in obj:
+                # Instead of: obj["dtype"] = "float32" (This causes 'str' has no attribute 'as_list')
+                # Use a dictionary that satisfies the Keras 2 'as_list' requirement:
+                obj["dtype"] = {"class_name": "float32", "config": {"name": "float32"}} 
+
+            # --- ALSO ADD THIS TO PREVENT METADATA CRASHES ---
+            if "registered_name" in obj:
+                del obj["registered_name"]
 
         # Run the deep clean on the whole file
         deep_clean(config_dict)
