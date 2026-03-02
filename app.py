@@ -33,12 +33,12 @@ def load_model_integrated():
         )
         
         # Rebuild your specific top layers (based on your error log)
-        # Rebuild your EXACT top layers based on the error log
+        # This matches the (1280, 256) and (256, 6) shapes the error reported
         model = tf.keras.Sequential([
             base_model,
-            tf.keras.layers.Dense(256, activation='relu'), # The "Missing" layer causing the mismatch
-            tf.keras.layers.Dropout(0.5),                  # Common in EfficientNet scripts
-            tf.keras.layers.Dense(4, activation='softmax') # Your final 4 classes
+            tf.keras.layers.Dense(256, activation='relu'),
+            tf.keras.layers.Dropout(0.5), 
+            tf.keras.layers.Dense(6, activation='softmax') # CHANGED FROM 4 TO 6
         ])
         
         # 2. Load only the weights from your .keras file
