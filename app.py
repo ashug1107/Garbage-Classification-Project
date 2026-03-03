@@ -32,16 +32,15 @@ def load_model_integrated():
             pooling='avg'
         )
         
-        # Rebuild your specific top layers (based on your error log)
-        # This matches the (1280, 256) and (256, 6) shapes the error reported
+        # Rebuild specific top layers
         model = tf.keras.Sequential([
             base_model,
             tf.keras.layers.Dense(256, activation='relu'),
             tf.keras.layers.Dropout(0.5), 
-            tf.keras.layers.Dense(6, activation='softmax') # CHANGED FROM 4 TO 6
+            tf.keras.layers.Dense(6, activation='softmax')
         ])
         
-        # 2. Load only the weights from your .keras file
+        # 2. Load only the weights from .keras file
         # .keras files are just ZIPs; Keras can often extract weights even if config is 'unknown'
         model.load_weights(MODEL_PATH)
         
@@ -57,14 +56,13 @@ def load_model_integrated():
 
 model = load_model_integrated()
 
-# --- 4. PAGE CONFIG & THEME (Your Frontend) ---
+# --- 4. PAGE CONFIG & THEME (Frontend)  ---
 st.set_page_config(
     page_title="EcoScan AI | Intelligent Waste Sorting",
     page_icon="♻️",
     layout="wide"
 )
 
-# Your Beautiful UI Styling
 st.markdown("""
     <style>
     .stApp { background-color: #f0f4f8; }
@@ -192,3 +190,9 @@ with st.sidebar:
     st.metric("Model Engine", "EfficientNet-B0")
     st.metric("Test Accuracy", "85.02%")
     st.info("The AI identifies 6 categories of waste.")
+    markdown_list_string = ""
+    for item in CLASS_NAMES:
+        markdown_list_string += f"- {item}\n"
+
+    # 3. Pass the formatted string to st.info()
+    st.info(markdown_list_string)
