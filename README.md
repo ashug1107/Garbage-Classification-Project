@@ -16,6 +16,17 @@ This project utilizes an augmented version of the Garbage Classification (TrashN
 * **Input Size:** 224x224 RGB images.
 * **Key Techniques:** Data Augmentation, Batch Normalization, Fine-Tuning (Last 20 layers), Exploratory Data Analysis.
 
+## 🚀 Deployment Architecture
+The application is hosted as a Web Service on Render, integrated directly with this GitHub repository for continuous deployment.
+
+* **Streamlit Frontend:** Provides an interactive interface for image uploads and real-time inference.
+
+* **Environment Management:** All sensitive credentials (such as GitHub tokens for feedback syncing) are managed via Render Environment Variables and GitHub Secrets.
+
+* **Keras Compatibility Layer:** Since the model was trained in a Keras 3 environment but deployed in a Keras 2 environment, I implemented a Manual Architecture Reconstruction (Safe Shell). This script manually builds the EfficientNetB0 + Dense layers to ensure weight compatibility without relying on potentially corrupted .json configuration files.
+
+* **Check out the live app:** https://garbage-classification-project.onrender.com 
+
 ## 🚀 Model Evolution
 
 ### Phase 1: Transfer Learning
