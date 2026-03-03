@@ -15,7 +15,7 @@ import tf_keras as keras
 # --- 2. GLOBAL SETTINGS ---
 MODEL_PATH = "garbage_classifier_efficientnetb0_model.keras"
 CLASS_NAMES = ['cardboard', 'glass', 'metal', 'paper', 'plastic', 'trash']
-GITHUB_TOKEN = "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"
+GITHUB_TOKEN = "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"
 REPO_OWNER = "ashug1107"
 REPO_NAME = "Garbage-Classification-Project"
 
