@@ -2,6 +2,13 @@
 
 This project implements an automated waste classification system designed to improve recycling accuracy. Using **Transfer Learning** and **Fine-Tuning** on the EfficientNet-B0 architecture, the model classifies waste into 6 distinct categories.
 
+## Dataset Information
+This project utilizes an augmented version of the Garbage Classification (TrashNet) dataset.
+
+* **Base:** 2,527 images across 6 classes.
+
+* **Augmentation:** To improve the model's sensitivity to non-recyclable waste, I integrated ~300 additional samples into the "trash" category from external sources, addressing a significant class imbalance in the original dataset.
+
 ## 📊 Performance Summary
 
 * **Architecture:** EfficientNet-B0 (Pre-trained on ImageNet)
